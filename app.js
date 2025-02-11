@@ -4,8 +4,7 @@ const exphbs = require('express-handlebars');
 const sequelize = require('./database');
 const Livro = require('./models/Livros');
 const Usuario = require('./models/Usuario');
-
-
+const path = require("path");
 const app = express();
 const PORT = 3000;
 
@@ -17,6 +16,12 @@ app.set('view engine', 'handlebars');
 sequelize.sync({ force: false }).then(() => {
   console.log('Database Conectado!');
 });
+
+app.set("views", path.join(__dirname, "views"));
+
+
+const usuarioRoutes = require('./controller/UsuarioController');
+app.use("/", usuarioRoutes);
 
 // Rotas principais
 app.get('/', async (req, res) => {
