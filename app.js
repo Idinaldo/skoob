@@ -13,52 +13,38 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
 
+
+
 sequelize.sync({ force: false }).then(() => {
   console.log('Database Conectado!');
 });
 
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch((err) => {
+    console.error('Unable to connect to the database:', err);
+  });
+
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.set("views", path.join(__dirname, "views"));
 
 
 const usuarioRoutes = require('./controller/UsuarioController');
 app.use("/", usuarioRoutes);
 
+const livroRoutes = require('./controller/LivroController');
+app.use("/", livroRoutes);
+
+const publicacaoRoutes = require('./controller/PublicacaoController');
+app.use("/", publicacaoRoutes);
+
 // Rotas principais
 app.get('/', async (req, res) => {
-  //let Livros = await Livro.findAll();
-  //Livros = Livros.map((Livro) => Livro.dataValues);
-  
   res.render('index');
-});
-
-app.get('/create', (req, res) => {
-  res.render('create');
-});
-app.get('/create', (req, res) => {
-  res.render('create');
-});
-app.post('/create', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema } = req.body;
-  await Livro.create({  id, titulo, dtlanc, autor, genero, preco, adap_cinema });
-  res.redirect('/');
-});
-
-app.get('/edit/:id', async (req, res) => {
-  let Livro = await Livro.findByPk(req.params.id);
-  Livro = Livro.dataValues;
-  
-  res.render('edit', { Livro });
-});
-
-app.post('/edit/:id', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema } = req.body;
-  await Livro.update({id, titulo, dtlanc, autor, genero, preco, adap_cinema }, { where: { id: req.params.id } });
-  res.redirect('/');
-});
-
-app.get('/delete/:id', async (req, res) => {
-  await Livro.destroy({ where: { id: req.params.id } });
-  res.redirect('/');
 });
 
 // Iniciar o servidor

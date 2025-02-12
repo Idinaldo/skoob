@@ -1,9 +1,18 @@
-<h1>Adicionar Livros</h1>
-<form action="/create" method="POST">
+<h1>Adicionar Usuário</h1>
+<form action="/user/create" method="POST">
   <label for="nome">Nome:</label>
   <input type="text" id="nome" name="nome" required>
-  <label for="idade">Idade:</label>
-  <input type="number" id="idade" name="idade" required>
+  
+  <label for="email">email:</label>
+  <input type="email" id="email" name="email" required>
+  
+  <label for="senha">senha:</label>
+  <input type="password" id="senha" name="senha" required>
+  
+  <input readonly type="number" id="pontos" name="pontos" value="0" required>
+  
+  <input readonly type="number" id="tempo_lid" name="tempo_lid" value="0" required>
+  
   <button type="submit">Salvar</button>
 </form>
 <a href="/">Voltar</a>

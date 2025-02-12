@@ -30,6 +30,9 @@ const Usuario = sequelize.define('USuario', {
         type: DataTypes.DECIMAL,
         allowNull: false,
     }
+  }, {
+    tableName: "USuarios",
+    timestamps: true
   }); 
 
 module.exports = Usuario;

@@ -9,9 +9,10 @@ const path = "layouts/usuario";
 // GET | rota para views/layout/usuario/index.handlebars
 router.get("/user", async (req, res) => {
   let Usuarios = await Usuario.findAll();
-  Usuarios = Usuarios.map((Usuario) => Usuario.dataValues);
-  
-  res.render(path + '/index', { Usuarios });
+  //Usuarios = Usuarios.map((Usuario) => Usuario.dataValues);
+  const usuariosData = Usuarios.map(user => user.get({ plain: true }))
+  console.log(Usuarios);
+  res.render(path + '/index', { Usuario : usuariosData });
 }); // funciona | testado
 
 
@@ -23,25 +24,38 @@ router.get('/user/create', (req, res) => {
 
 // POST | rota para views/layout/usuario/create.handlebars
 router.post('/user/create', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema } = req.body;
-  await Usuario.create({  id, titulo, dtlanc, autor, genero, preco, adap_cinema });
+  console.log(req.body);
+  const { nome, email, senha, pontos, tempo_lid } = req.body;
+  
+  /*
+  console.log("Nome:", nome);
+  console.log("Email:", email);
+  console.log("Senha:", senha);
+  console.log("Pontos:", pontos);
+  console.log("Tempo Lido:", tempo_lid);
+  */
+
+  const newUser = await Usuario.create({ nome, email, senha, pontos, tempo_lid });
+    
+  //console.log("New User", newUser);
+  
   res.redirect('/');
-}); // não sei se funciona | não testado
+}); // funciona | testado
 
 
 // GET | rota para views/layout/usuario/edit.handlebars
 router.get('/user/edit/:id', async (req, res) => {
-  let Usuario = await Usuario.findByPk(req.params.id);
-  Usuario = Usuario.dataValues;
+  let usuario = await Usuario.findByPk(req.params.id);
+  usuario = usuario.dataValues;
   
-  res.render(path + '/edit', { Usuario });
+  res.render(path + '/edit', { usuario });
 }); // não sei se funciona | não testado
 
 
 // POST | rota para views/layout/usuario/edit.handlebars
 router.post('/user/edit/:id', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema } = req.body;
-  await Usuario.update({id, titulo, dtlanc, autor, genero, preco, adap_cinema }, { where: { id: req.params.id } });
+  const { nome, email, senha, pontos, tempo_lid } = req.body;
+  await Usuario.update({ nome, email, senha, pontos, tempo_lid }, { where: { id: req.params.id } });
   res.redirect('/');
 });
 
@@ -49,47 +63,11 @@ router.post('/user/edit/:id', async (req, res) => {
 // ARQUIVO INEXISTENTE
 // GET | rota para views/layout/usuario/delete.handlebars
 router.get('/user/delete/:id', async (req, res) => {
+  console.log("ID: ", req.params.id)
   await Usuario.destroy({ where: { id: req.params.id } });
   res.redirect('/');
 });
 
-/*
-app.get('/user/main', async (req, res) => {
-  let Usuarios = await Usuario.findAll();
-  Usuarios = Usuarios.map((Usuario) => Usuario.dataValues);
-  
-  res.render('livros/index', { Usuarios });
-});
-
-app.get('/create-user', (req, res) => {
-  res.render('create-user');
-});
-
-app.post('/create-user', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema } = req.body;
-  await Usuario.create({  id, titulo, dtlanc, autor, genero, preco, adap_cinema });
-  res.redirect('/');
-});
-
-app.get('/edit-user/:id', async (req, res) => {
-  let Usuario = await Usuario.findByPk(req.params.id);
-  Usuario = Usuario.dataValues;
-  
-  res.render('edit-user', { Usuario });
-});
-
-app.post('/edit-user/:id', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema } = req.body;
-  await Usuario.update({id, titulo, dtlanc, autor, genero, preco, adap_cinema }, { where: { id: req.params.id } });
-  res.redirect('/');
-});
-
-app.get('/delete-user/:id', async (req, res) => {
-  await Usuario.destroy({ where: { id: req.params.id } });
-  res.redirect('/');
-});
-
-*/
 router.get("/", (req, res) => {
   res.render("index");
 });

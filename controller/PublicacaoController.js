@@ -1,38 +1,47 @@
 const express = require('express');
-const Publicacao = require('./models/Publicacoes');
-
-const app = express();
+const Publicacao = require('../models/Publicacoes');
+const path = "layouts/publicacoes";
+const router = express.Router();
 
 
 // Rotas principais
-app.get('/main', async (req, res) => {
-  res.render('index');
+router.get('/publication', async (req, res) => {
+  let publications = await Publicacao.findAll();
+  const publicationsData = publications.map(publication => publication.get({ plain: true }))
+  console.log(publications);
+  res.render(path + '/index', { publication : publicationsData });
 });
 
-app.get('/create-publication', (req, res) => {
-  res.render('create-publication');
+router.get('/create-publication', (req, res) => {
+  res.render(path + '/create');
 });
 
-app.post('/create-publication', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema, nota } = req.body;
-  await Livro.create({  id, titulo, dtlanc, autor, genero, preco, adap_cinema, nota });
+router.post('/create-publication', async (req, res) => {
+  const { titulo, descricao, autor, tema } = req.body;
+  console.log("**req.body: ", req.body);
+  const publicacao = await Publicacao.create({ titulo, descricao, autor, tema });
+  console.log(publicacao);
   res.redirect('/');
 });
 
-app.get('/edit-publication/:id', async (req, res) => {
-  let Livro = await Livro.findByPk(req.params.id);
-  Livro = Livro.dataValues;
+router.get('/edit-publication/:id', async (req, res) => {
+  let publicacao = await Publicacao.findByPk(req.params.id);
+  publicacao = publicacao.dataValues;
   
-  res.render('edit-publication', { Livro });
+  res.render(path + '/edit', { publicacao });
 });
 
-app.post('/edit-publication/:id', async (req, res) => {
-  const { id, titulo, dtlanc, autor, genero, preco, adap_cinema, nota } = req.body;
-  await Livro.update({id, titulo, dtlanc, autor, genero, preco, adap_cinema, nota }, { where: { id: req.params.id } });
+router.post('/edit-publication/:id', async (req, res) => {
+  const { titulo, descricao, autor, tema } = req.body;
+  console.log("**req.body: ", req.body);
+  const publicao = await Publicacao.update({ titulo, descricao, autor, tema }, { where: { id: req.params.id } });
+  console.log("**publicao: ", publicao);
   res.redirect('/');
 });
 
-app.get('/delete-publication/:id', async (req, res) => {
-  await Livro.destroy({ where: { id: req.params.id } });
+router.get('/delete-publication/:id', async (req, res) => {
+  await Publicacao.destroy({ where: { id: req.params.id } });
   res.redirect('/');
 });
+
+module.exports = router;
